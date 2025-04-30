@@ -1,0 +1,78 @@
+/* Estilos gerais */
+body {
+    background-color: #f8f9fa; /* cinza claro suave */
+    font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  /* Cabeçalho */
+  header {
+    background-color: #0d6efd; /* azul Bootstrap */
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+  }
+  
+  /* Conteúdo principal */
+  .container {
+    margin-top: 30px;
+    margin-bottom: 30px;
+  }
+  
+  /* Abas (Nav Tabs) */
+  .nav-tabs .nav-link {
+    color: #0d6efd;
+    font-weight: 500;
+  }
+  
+  .nav-tabs .nav-link.active {
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+    border-radius: 5px 5px 0 0;
+  }
+  
+  /* Formulários */
+  form {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Botão calcular */
+  button.btn-primary {
+    width: 100%;
+    font-weight: bold;
+  }
+  
+  /* Resultados */
+  #resultado1, #resultado2, #resultado3 {
+    margin-top: 20px;
+  }
+  
+  /* Rodapé */
+  footer {
+    background-color: #343a40; /* cinza escuro */
+    color: #adb5bd; /* cinza claro */
+    text-align: center;
+    padding: 15px 0;
+    font-size: 0.9rem;
+    margin-top: 30px;
+    letter-spacing: 0.5px;
+    border-top: 1px solid #dee2e6;
+  }
+  
+  /* Responsividade para telas menores */
+  @media (max-width: 576px) {
+    header {
+      font-size: 1.5rem;
+    }
+  
+    form {
+      padding: 15px;
+    }
+  }
+  
