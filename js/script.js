@@ -233,18 +233,32 @@ function calcularMultaCancelamento(event) {
     return;
   }
 
-  // Data final da fidelidade: 12 meses após início do contrato
+  // Define a data final da fidelidade (mesmo dia e mês, +1 ano)
   const fimFidelidade = new Date(inicioContrato);
   fimFidelidade.setFullYear(fimFidelidade.getFullYear() + 1);
+  fimFidelidade.setDate(fimFidelidade.getDate() + 1);
 
+  // Se já passou da fidelidade, sem multa
   if (cancelamento >= fimFidelidade) {
     resultadoDiv.innerHTML = `<div class="alert alert-success">Nenhuma multa aplicável. Contrato já cumprido.</div>`;
     return;
   }
 
-  // Diferença de meses restantes
-  const mesesRestantes = (fimFidelidade.getFullYear() - cancelamento.getFullYear()) * 12 +
-    (fimFidelidade.getMonth() - cancelamento.getMonth());
+  // Se ainda está dentro do prazo, calcula meses restantes
+  let anos = fimFidelidade.getFullYear() - cancelamento.getFullYear();
+  let meses = fimFidelidade.getMonth() - cancelamento.getMonth();
+  let dias = fimFidelidade.getDate() - cancelamento.getDate();
+
+  let mesesRestantes = anos * 12 + meses;
+  if (dias > 0) {
+    mesesRestantes += 1; // arredonda pra cima se ainda não chegou no mesmo dia
+  }
+
+  // Garante mínimo de 1 mês, mesmo se as datas forem iguais
+  if (mesesRestantes <= 0) {
+    resultadoDiv.innerHTML = `<div class="alert alert-success">Nenhuma multa aplicável. Contrato já cumprido.</div>`;
+    return;
+  }
 
   const multaBase = 600;
   const multaPorMes = multaBase / 12;
