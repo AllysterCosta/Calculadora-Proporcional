@@ -96,7 +96,7 @@ async function adicionar2DiasUteis(dataInicial) {
   let data = new Date(dataInicial);
   let diasUteisAdicionados = 0;
 
-  while (diasUteisAdicionados < 2) {
+  while (diasUteisAdicionados < 3) {
     data.setDate(data.getDate() + 1);
     const diaSemana = data.getDay();
     const dataFormatada = data.toISOString().split('T')[0];
@@ -115,68 +115,65 @@ async function calcularTrocaPlano(event) {
   const valorPlano1 = parseFloat(document.getElementById('valorPlano1tab3').value.replace(',', '.'));
   const valorPlano2 = parseFloat(document.getElementById('valorPlano2tab3').value.replace(',', '.'));
   const dataVencimento = new Date(document.getElementById('dataVencimento').value);
-  const dataUltimoFaturamentoOriginal = new Date(document.getElementById('dataUltimoFaturamento').value);
+  const dataUltimoFaturamento = new Date(document.getElementById('dataUltimoFaturamento').value);
+  const dataSolicitacao = new Date(document.getElementById('dataUltimoFaturamento').value); // Novo campo obrigatório
 
-  if (isNaN(valorPlano1) || isNaN(valorPlano2) || isNaN(dataVencimento.getTime()) || isNaN(dataUltimoFaturamentoOriginal.getTime())) {
+  if (
+    isNaN(valorPlano1) || isNaN(valorPlano2) ||
+    isNaN(dataVencimento.getTime()) || isNaN(dataUltimoFaturamento.getTime()) ||
+    isNaN(dataSolicitacao.getTime())
+  ) {
     alert('Preencha todos os campos corretamente.');
     return;
   }
 
-  const dataUltimoFaturamento = await adicionar2DiasUteis(dataUltimoFaturamentoOriginal);
+  // Nova data efetiva da troca: 2 dias úteis após a solicitação
+  const dataEfetivaTroca = await adicionar2DiasUteis(dataSolicitacao);
+  console.log('[DEBUG] Data efetiva da troca:', dataEfetivaTroca.toLocaleDateString('pt-BR'));
 
   const vencimentoDia = dataVencimento.getDate();
   const ano = dataVencimento.getFullYear();
   const mes = dataVencimento.getMonth();
 
-  const diasMesVencimento = new Date(ano, mes + 1, 0).getDate();
+  var diasMesVencimento = new Date(ano, mes + 1, 0).getDate();
 
-  //=================================================================================
-  const dataInicioPlano1 = new Date(dataVencimento); // início do uso do plano atual
-  const dataFimPlano1 = new Date(dataUltimoFaturamento);
-  dataFimPlano1.setDate(dataFimPlano1.getDate() - 1); // o último dia de uso do plano 1 é o dia anterior ao faturamento
-  console.log('[DEBUG] A data de fim do plano é: ', dataFimPlano1)
+  // Período do plano atual: de data de vencimento até o dia anterior à troca
+  const dataFimPlano1 = new Date(dataEfetivaTroca);
+  dataFimPlano1.setDate(dataFimPlano1.getDate() - 1);
 
-  let diffTimePlano1 = dataFimPlano1.getTime() - dataInicioPlano1.getTime();
-  let diasPlano1 = Math.ceil(diffTimePlano1 / (1000 * 60 * 60 * 24));
-  diasPlano1 = diasPlano1 > 0 ? diasPlano1 : 0;
-  console.log('[DEBUG] os dias de plano 1 ', diasPlano1)
-  //================================================================================
-  //let diasPlano1 = (dataUltimoFaturamento.getDate() - vencimentoDia);
+  let diasPlano1 = Math.ceil((dataFimPlano1 - dataVencimento) / (1000 * 60 * 60 * 24));
   diasPlano1 = diasPlano1 > 0 ? diasPlano1 : 0;
 
-  if (diasPlano1 <= 0) {
-    alert('A data de último faturamento deve ser depois da data de vencimento.');
-    return;
-  }
+  // Período do novo plano: de data da troca até próximo vencimento
+  var proximoVencimento = new Date(ano, mes + 1, vencimentoDia + 1);
+  var diasPlano2 = Math.floor((proximoVencimento - dataEfetivaTroca) / (1000 * 60 * 60 * 24)) + 1;
+  console.log('Proximo vencimento', proximoVencimento.toLocaleDateString('pt-BR'))
 
-  const proximoVencimento = new Date(ano, mes + 1, vencimentoDia + 1);
-
-  const diffTime = proximoVencimento.getTime() - dataUltimoFaturamento.getTime();
-  const diasPlano2 = Math.floor(diffTime / (1000 * 60 * 60 * 24) + 1); // inclui o dia da troca
-  console.log('[DEBUG] Os dias faturados são: ', diasPlano1, 'Os do segundo plano são: ', diasPlano2)
-
-  if (diasPlano2 <= 0) {
-    alert('A data de último faturamento não pode ser após o próximo vencimento.');
-    return;
+  if (diasPlano1 <= 0 || diasPlano2 <= 0) {
+    console.log('Dias 1', diasPlano1, 'Dias 2', diasPlano2)
+    proximoVencimento = new Date(ano, mes + 1, vencimentoDia + 1);
+    diasMesVencimento = new Date(proximoVencimento.getFullYear(), proximoVencimento.getMonth() + 1, 0).getDate();
+    diasPlano2 = Math.floor((proximoVencimento - dataEfetivaTroca) / (1000 * 60 * 60 * 24)) + 1;
   }
 
   const valorProporcionalPlano1 = (valorPlano1 / diasMesVencimento) * diasPlano1;
   const valorProporcionalPlano2 = (valorPlano2 / diasMesVencimento) * diasPlano2;
   const valorTotal = valorProporcionalPlano1 + valorProporcionalPlano2;
 
-  const dataFormatadaTroca = dataUltimoFaturamento.toLocaleDateString('pt-BR');
-
   document.getElementById('resultadoTrocaPlano').innerHTML = `
     <div class="alert alert-success">
       <p><strong>Valor proporcional do plano atual:</strong> R$ ${valorProporcionalPlano1.toFixed(2)}</p>
       <p><strong>Valor proporcional do novo plano:</strong> R$ ${valorProporcionalPlano2.toFixed(2)}</p>
-      <p><strong>Data efetiva da troca:</strong> ${dataFormatadaTroca}</p>
+      <p><strong>Data efetiva da troca:</strong> ${dataEfetivaTroca.toLocaleDateString('pt-BR')}</p>
+      <p><strong>Próximo vencimento:</strong> ${proximoVencimento.toLocaleDateString('pt-BR')}</p>
       <hr>
       <h5><strong>Valor Total da Fatura:</strong> R$ ${valorTotal.toFixed(2)}</h5>
     </div>
   `;
 }
+
 //========================================================================================================
+document.getElementById('formTrocaVencimento').addEventListener('submit', calcularMudancaVencimento);
 async function calcularMudancaVencimento(event) {
   event?.preventDefault();
 
