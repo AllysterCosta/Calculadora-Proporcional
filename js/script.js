@@ -1,6 +1,26 @@
 // Atualizar o ano no rodapé
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('anoAtual').textContent = new Date().getFullYear();
+
+
+  // Ajustando a data 
+  var diaHojeInput = document.getElementById('dataCancelamentoHoje');
+  var diaHojeBloqueio = document.getElementById('dataBloqueio');
+  var diaTrocaPlano = document.getElementById('dataTrocaPlanoHoje');
+  var diaTrocaVencimento = document.getElementById('dataTrocaVencimentoHoje');
+  var dataMultaCancelamento = document.getElementById('dataMultaCancelamento');
+  //posinputs
+  var Hoje = new Date();
+  var anoHoje = Hoje.getFullYear();
+  var mesHoje = String(Hoje.getMonth() + 1).padStart(2, '0');
+  var HojeDia = String(Hoje.getDate()).padStart(2, '0');
+  var dataAtual = `${anoHoje}-${mesHoje}-${HojeDia}`;
+
+  diaHojeInput.value = dataAtual;
+  diaHojeBloqueio.value = dataAtual;
+  diaTrocaPlano.value = dataAtual;
+  diaTrocaVencimento.value = dataAtual;
+  dataMultaCancelamento.value = dataAtual;
 });
 
 // Função para calcular quantos dias tem no mês
@@ -11,23 +31,27 @@ function diasNoMes(data) {
 }
 
 // Cálculo do formulário 1 (Cancelamento)
-document.getElementById('form1').addEventListener('submit', function (event) {
+document.getElementById('CancelamentoForm').addEventListener('submit', function (event) {
   event.preventDefault();
 
   const valorPlano = parseFloat(document.getElementById('valorPlano1').value);
-  const mesReferencia = new Date(document.getElementById('mesReferencia1').value);
-  const dataFaturamento = new Date(document.getElementById('dataFaturamento1').value);
+  const mesReferencia = new Date(document.getElementById('mesReferencia1').valueAsDate);
+  const dataFaturamento = new Date(document.getElementById('dataCancelamentoHoje').value);
   const diasSemInternet = parseInt(document.getElementById('diasSemInternet1').value);
-
+  // ajustando a data para o dia correto.
+  dataFaturamento.setDate(dataFaturamento.getDate() + 1);
+  mesReferencia.setDate(mesReferencia.getDate() + 1);
+  // verificar se os valores são numeros
   if (isNaN(valorPlano) || isNaN(diasSemInternet) || isNaN(mesReferencia.getTime()) || isNaN(dataFaturamento.getTime())) {
     alert('Preencha todos os campos corretamente.');
     return;
   }
-
+  // calcular quantos dias tem naquele mês.
   const totalDiasMes = diasNoMes(mesReferencia);
-
   // Calcular dias usados considerando o intervalo de datas
-  let diasUsados = (dataFaturamento.getDate() - mesReferencia.getDate()) + 1;
+  let diasUsados = Math.abs(dataFaturamento.getTime() - mesReferencia.getTime()) + 1;
+  let diasUsadosDiff = Math.ceil(diasUsados / (1000 * 3600 * 24));
+  diasUsados = diasUsadosDiff;
   if (diasUsados < 0) diasUsados = 0;
 
   // Descontar dias sem internet
@@ -41,30 +65,35 @@ document.getElementById('form1').addEventListener('submit', function (event) {
   // Mostrar o resultado
   document.getElementById('resultado1').innerHTML = `
       <div class="alert alert-success" role="alert">
+        <p><strong>A quantidade de dias utilizado foi: ${diasValidos}</strong></p>
         <strong>Valor proporcional do cancelamento:</strong> R$ ${valorProporcional}
       </div>
     `;
 });
 
-
+//====================================================================================================================
 // Cálculo do formulário 2 (Bloqueio Temporário)
-document.getElementById('form2').addEventListener('submit', function (event) {
+document.getElementById('bloqueioTemporario').addEventListener('submit', function (event) {
   event.preventDefault();
 
   const valorPlano = parseFloat(document.getElementById('valorPlano2').value);
   const mesReferencia = new Date(document.getElementById('mesReferencia2').value);
-  const dataFaturamento = new Date(document.getElementById('dataFaturamento2').value);
+  const dataFaturamento = new Date(document.getElementById('dataBloqueio').value);
   const diasSemInternet = parseInt(document.getElementById('diasSemInternet2').value);
-
+  // ajustando a data para o dia correto.
+  dataFaturamento.setDate(dataFaturamento.getDate() + 1);
+  mesReferencia.setDate(mesReferencia.getDate() + 1);
+  // verificar se os valores são numeros
   if (isNaN(valorPlano) || isNaN(diasSemInternet) || isNaN(mesReferencia.getTime()) || isNaN(dataFaturamento.getTime())) {
     alert('Preencha todos os campos corretamente.');
     return;
   }
-
+  // calcular quantos dias tem naquele mês.
   const totalDiasMes = diasNoMes(mesReferencia);
-
   // Calcular dias usados considerando o intervalo de datas
-  let diasUsados = (dataFaturamento.getDate() - mesReferencia.getDate()) + 1;
+  let diasUsados = Math.abs(dataFaturamento.getTime() - mesReferencia.getTime()) + 1;
+  let diasUsadosDiff = Math.ceil(diasUsados / (1000 * 3600 * 24));
+  diasUsados = diasUsadosDiff;
   if (diasUsados < 0) diasUsados = 0;
 
   // Descontar dias sem internet
@@ -78,6 +107,7 @@ document.getElementById('form2').addEventListener('submit', function (event) {
   // Mostrar o resultado
   document.getElementById('resultado2').innerHTML = `
       <div class="alert alert-info" role="alert">
+        <p><strong>A quantidade de dias usados foi: ${diasValidos}</strong></p>
         <strong>Valor proporcional do bloqueio temporário:</strong> R$ ${valorProporcional}
       </div>
     `;
@@ -115,8 +145,8 @@ async function calcularTrocaPlano(event) {
   const valorPlano1 = parseFloat(document.getElementById('valorPlano1tab3').value.replace(',', '.'));
   const valorPlano2 = parseFloat(document.getElementById('valorPlano2tab3').value.replace(',', '.'));
   const dataVencimento = new Date(document.getElementById('dataVencimento').value);
-  const dataUltimoFaturamento = new Date(document.getElementById('dataUltimoFaturamento').value);
-  const dataSolicitacao = new Date(document.getElementById('dataUltimoFaturamento').value); // Novo campo obrigatório
+  const dataUltimoFaturamento = new Date(document.getElementById('dataTrocaPlanoHoje').value);
+  const dataSolicitacao = new Date(document.getElementById('dataTrocaPlanoHoje').value); // Novo campo obrigatório
 
   if (
     isNaN(valorPlano1) || isNaN(valorPlano2) ||
@@ -129,7 +159,7 @@ async function calcularTrocaPlano(event) {
 
   // Nova data efetiva da troca: 2 dias úteis após a solicitação
   const dataEfetivaTroca = await adicionar2DiasUteis(dataSolicitacao);
-  console.log('[DEBUG] Data efetiva da troca:', dataEfetivaTroca.toLocaleDateString('pt-BR'));
+  //console.log('[DEBUG] Data efetiva da troca:', dataEfetivaTroca.toLocaleDateString('pt-BR'));
 
   const vencimentoDia = dataVencimento.getDate();
   const ano = dataVencimento.getFullYear();
@@ -147,7 +177,7 @@ async function calcularTrocaPlano(event) {
   // Período do novo plano: de data da troca até próximo vencimento
   var proximoVencimento = new Date(ano, mes + 1, vencimentoDia + 1);
   var diasPlano2 = Math.floor((proximoVencimento - dataEfetivaTroca) / (1000 * 60 * 60 * 24)) + 1;
-  console.log('Proximo vencimento', proximoVencimento.toLocaleDateString('pt-BR'))
+  //console.log('Proximo vencimento', proximoVencimento.toLocaleDateString('pt-BR'))
 
   if (diasPlano1 <= 0 || diasPlano2 <= 0) {
     console.log('Dias 1', diasPlano1, 'Dias 2', diasPlano2)
@@ -180,7 +210,7 @@ async function calcularMudancaVencimento(event) {
   const valorPlano = parseFloat(document.getElementById('valorPlanoTab4').value.replace(',', '.'));
   const dataVencimentoAtual = new Date(document.getElementById('dataVencimentoAtual').value);
   const novaDataVencimento = parseInt(document.getElementById('novaDataVencimento').value);
-  const dataUltimoFaturamento = new Date(document.getElementById('dataUltimoFaturamentoTab4').value);
+  const dataUltimoFaturamento = new Date(document.getElementById('dataTrocaVencimentoHoje').value);
 
   if (isNaN(valorPlano) || isNaN(dataVencimentoAtual.getTime()) || isNaN(novaDataVencimento) || isNaN(dataUltimoFaturamento.getTime())) {
     alert('Preencha todos os campos corretamente.');
@@ -222,8 +252,9 @@ function calcularMultaCancelamento(event) {
   event.preventDefault();
 
   const inicioContrato = new Date(document.getElementById('dataInicioContrato').value);
-  const cancelamento = new Date(document.getElementById('dataCancelamento').value);
+  const cancelamento = new Date(document.getElementById('dataMultaCancelamento').value);
   const resultadoDiv = document.getElementById('resultadoMultaCancelamento');
+  const houveBloqueio = parseInt(document.getElementById('BloqueioMultaCancelamento').value);
 
   if (isNaN(inicioContrato.getTime()) || isNaN(cancelamento.getTime())) {
     resultadoDiv.innerHTML = `<div class="alert alert-danger">Preencha todas as datas corretamente.</div>`;
@@ -232,8 +263,21 @@ function calcularMultaCancelamento(event) {
 
   // Define a data final da fidelidade (mesmo dia e mês, +1 ano)
   const fimFidelidade = new Date(inicioContrato);
-  fimFidelidade.setFullYear(fimFidelidade.getFullYear() + 1);
-  fimFidelidade.setDate(fimFidelidade.getDate() + 1);
+  console.log('Valor de bloqueio', houveBloqueio);
+  if (houveBloqueio >= 1) {
+    const fimFidelidadeComBloqueio = new Date(inicioContrato);
+    fimFidelidadeComBloqueio.setDate(fimFidelidadeComBloqueio.getDate() + 1);
+    fimFidelidadeComBloqueio.setMonth(fimFidelidadeComBloqueio.getMonth() + houveBloqueio);
+    fimFidelidadeComBloqueio.setFullYear(fimFidelidadeComBloqueio.getFullYear() + 1);
+    fimFidelidade.setDate(fimFidelidadeComBloqueio.getDate());
+    fimFidelidade.setMonth(fimFidelidadeComBloqueio.getMonth());
+    fimFidelidade.setFullYear(fimFidelidadeComBloqueio.getFullYear());
+  }
+  if (houveBloqueio <= 0) {
+    console.log('Sem Bloqueio');
+    fimFidelidade.setFullYear(fimFidelidade.getFullYear() + 1);
+    fimFidelidade.setDate(fimFidelidade.getDate() + 1);
+  }
 
   // Se já passou da fidelidade, sem multa
   if (cancelamento >= fimFidelidade) {

@@ -53,7 +53,7 @@
 
             <!-- Aba 1 Cancelamento -->
             <div class="tab-pane fade show active" id="tab1" role="tabpanel">
-                <form id="form1" class="row g-3">
+                <form id="CancelamentoForm" class="row g-3">
                     <div class="col-md-6">
                         <label for="valorPlano1" class="form-label">Valor do Plano:</label>
                         <input type="number" step="0.01" id="valorPlano1" class="form-control" placeholder="Ex: 00,00"
@@ -65,10 +65,10 @@
                     </div>
                     <div class="col-md-6">
                         <label for="dataFaturamento1" class="form-label">Data da solicitação (Hoje):</label>
-                        <input type="date" id="dataFaturamento1" class="form-control" required>
+                        <input type="date" id="dataCancelamentoHoje" class="form-control" disabled>
                     </div>
                     <div class="col-md-6">
-                        <label for="diasSemInternet1" class="form-label">Houve Dias Sem Internet:</label>
+                        <label for="diasSemInternet1" class="form-label">Houve dias sem internet:</label>
                         <input type="number" id="diasSemInternet1" class="form-control" value="0" min="0" max="31"
                             required>
                     </div>
@@ -83,7 +83,7 @@
 
             <!-- Aba 2 Suspensão de plano -->
             <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="aba2-tab">
-                <form id="form2">
+                <form id="bloqueioTemporario">
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label for="valorPlano2" class="form-label">Valor do Plano (R$)</label>
@@ -96,10 +96,10 @@
                         </div>
                         <div class="col-md-6">
                             <label for="dataFaturamento2" class="form-label">Data da solicitação (Hoje):</label>
-                            <input type="date" class="form-control" id="dataFaturamento2" required>
+                            <input type="date" class="form-control" id="dataBloqueio" disabled required>
                         </div>
                         <div class="col-md-6">
-                            <label for="diasSemInternet2" class="form-label">Dias sem Internet</label>
+                            <label for="diasSemInternet2" class="form-label">Houve dias sem Internet:</label>
                             <input type="number" class="form-control" id="diasSemInternet2" value="0" min="0" max="31"
                                 required>
                         </div>
@@ -137,7 +137,7 @@
                         </div>
                         <div class="col-md-6">
                             <label for="dataUltimoFaturamento" class="form-label">Data da solicitação (Hoje):</label>
-                            <input type="date" class="form-control" id="dataUltimoFaturamento" required>
+                            <input type="date" class="form-control" id="dataTrocaPlanoHoje" disabled required>
                         </div>
                     </div>
 
@@ -173,7 +173,7 @@
                         <div class="mb-3 col-md-6">
                             <label for="dataUltimoFaturamentoTab4" class="form-label">Data da solicitação(Hoje):
                             </label>
-                            <input type="date" class="form-control" id="dataUltimoFaturamentoTab4" required>
+                            <input type="date" class="form-control" id="dataTrocaVencimentoHoje" disabled required>
                         </div>
                         <div class="mb-3 col-md-6">
                             <label for="valorPlanoTab4" class="form-label">Valor do Plano:</label>
@@ -188,7 +188,7 @@
                 <div id="resultadoMudancaVencimento" class="mt-4"></div>
             </div>
 
-
+            <!-- Multa de Cancelamento -->
             <div class="tab-pane fade" id="tab5" role="tabpanel" aria-labelledby="tab5-tab">
                 <form id="formMultaCancelamento" onsubmit="calcularMultaCancelamento(event)">
                     <div class="row">
@@ -197,12 +197,26 @@
                             <input type="date" class="form-control" id="dataInicioContrato" required>
                         </div>
                         <div class="mb-3 col-md-6">
-                            <label for="dataCancelamento" class="form-label">Data do Cancelamento</label>
-                            <input type="date" class="form-control" id="dataCancelamento" required>
+                            <label for="dataCancelamento" class="form-label">Data da solicitação (Hoje):</label>
+                            <input type="date" class="form-control" id="dataMultaCancelamento" disabled required>
                         </div>
                     </div>
-
-                    <button type="submit" class="btn btn-danger">Calcular Multa</button>
+                    <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label for="BloqueioMultaCancelamento" class="form-label">Nova Data de Vencimento:</label>
+                            <select class="form-select" id="BloqueioMultaCancelamento" required>
+                                <option value="0">Selecione</option>
+                                <option value="1">1 Mês</option>
+                                <option value="2">2 Meses</option>
+                                <option value="3">3 Meses</option>
+                                <option value="4">4 Meses</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-danger">Calcular Multa</button>
+                    </div>
+                    
                 </form>
 
                 <div id="resultadoMultaCancelamento" class="mt-4"></div>
@@ -215,16 +229,11 @@
 
     <!-- Rodapé -->
     <footer class="bg-light text-center py-3 mt-auto">
-        <small>Criado por Allyster Marques - 2025 até <span id="anoAtual"></span></small>
+        <small>Copyright © 2025 - <span id="anoAtual"></span> Allyster Marques. Todos os direitos reservados.</small>
     </footer>
 
     <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-        // Atualizar ano no rodapé
-        document.getElementById('anoAtual').textContent = new Date().getFullYear();
-    </script>
     <script defer src="js/script.js"></script>
 </body>
 
