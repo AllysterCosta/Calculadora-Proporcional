@@ -192,6 +192,8 @@ async function calcularTrocaPlano(event) {
 
   document.getElementById('resultadoTrocaPlano').innerHTML = `
     <div class="alert alert-success">
+      <p><strong>Foram usados: </strong> ${diasPlano1} dias do plano antigo</p>
+      <p><strong>Foram usados: </strong> ${diasPlano2} dias do novo plano</p>
       <p><strong>Valor proporcional do plano atual:</strong> R$ ${valorProporcionalPlano1.toFixed(2)}</p>
       <p><strong>Valor proporcional do novo plano:</strong> R$ ${valorProporcionalPlano2.toFixed(2)}</p>
       <p><strong>Data efetiva da troca:</strong> ${dataEfetivaTroca.toLocaleDateString('pt-BR')}</p>
@@ -241,6 +243,7 @@ async function calcularMudancaVencimento(event) {
   // Exibir resultado
   document.getElementById('resultadoMudancaVencimento').innerHTML = `
     <div class="alert alert-info">
+      <p><strong>Foram utilizados: </strong> ${diffDias} dias</p>
       <p><strong>Valor proporcional da fatura:</strong> R$ ${valorProporcional.toFixed(2)}</p>
       <p><strong>Data efetiva da mudança:</strong> ${dataEfetiva.toLocaleDateString('pt-BR')}</p>
       <p><strong>Novo vencimento:</strong> ${novoVencimento.toLocaleDateString('pt-BR')}</p>
@@ -263,7 +266,6 @@ function calcularMultaCancelamento(event) {
 
   // Define a data final da fidelidade (mesmo dia e mês, +1 ano)
   const fimFidelidade = new Date(inicioContrato);
-  console.log('Valor de bloqueio', houveBloqueio);
   if (houveBloqueio >= 1) {
     const fimFidelidadeComBloqueio = new Date(inicioContrato);
     fimFidelidadeComBloqueio.setDate(fimFidelidadeComBloqueio.getDate() + 1);
@@ -274,7 +276,6 @@ function calcularMultaCancelamento(event) {
     fimFidelidade.setFullYear(fimFidelidadeComBloqueio.getFullYear());
   }
   if (houveBloqueio <= 0) {
-    console.log('Sem Bloqueio');
     fimFidelidade.setFullYear(fimFidelidade.getFullYear() + 1);
     fimFidelidade.setDate(fimFidelidade.getDate() + 1);
   }
@@ -303,12 +304,17 @@ function calcularMultaCancelamento(event) {
 
   const multaBase = 600;
   const multaPorMes = multaBase / 12;
-  const valorMulta = multaPorMes * mesesRestantes;
+  var valorMulta = multaPorMes * mesesRestantes;
+  if (valorMulta >= multaBase) {
+    valorMulta = multaBase;
+  }
 
   resultadoDiv.innerHTML = `
     <div class="alert alert-warning">
       <p><strong>Data final da fidelidade:</strong> ${fimFidelidade.toLocaleDateString('pt-BR')}</p>
       <p><strong>Meses restantes:</strong> ${mesesRestantes}</p>
+      <p><strong>Houve um bloqueio de: </strong> ${houveBloqueio} Meses</p>
+      <hr>
       <p><strong>Valor da multa:</strong> R$ ${valorMulta.toFixed(2)}</p>
     </div>
   `;
