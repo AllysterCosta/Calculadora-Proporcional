@@ -30,6 +30,20 @@ function diasNoMes(data) {
   return new Date(ano, mes, 0).getDate();
 }
 
+
+//====================================================================================================
+//Processo de cancelamento
+// Verificando se houve bloqueio
+const houveBloqueio = document.getElementById('BloqueioMultaCancelamento');
+let SimHouveBloqueio = houveBloqueio.value;
+houveBloqueio.addEventListener('change', function () {
+  const currentValue = houveBloqueio.value;
+  if (SimHouveBloqueio !== currentValue) {
+    //console.log('Valor mudou');
+  }
+  houveBloqueio.value = currentValue
+  //console.log('Bloqueio de ', houveBloqueio.value, 'Meses')
+})
 // Cálculo do formulário 1 (Cancelamento)
 document.getElementById('CancelamentoForm').addEventListener('submit', function (event) {
   event.preventDefault();
@@ -38,6 +52,9 @@ document.getElementById('CancelamentoForm').addEventListener('submit', function 
   const mesReferencia = new Date(document.getElementById('mesReferencia1').valueAsDate);
   const dataFaturamento = new Date(document.getElementById('dataCancelamentoHoje').value);
   const diasSemInternet = parseInt(document.getElementById('diasSemInternet1').value);
+
+  const inicioContrato = new Date(document.getElementById('dataInicioContrato').value);
+
   // ajustando a data para o dia correto.
   dataFaturamento.setDate(dataFaturamento.getDate() + 1);
   mesReferencia.setDate(mesReferencia.getDate() + 1);
@@ -62,14 +79,117 @@ document.getElementById('CancelamentoForm').addEventListener('submit', function 
   const valorDia = valorPlano / totalDiasMes;
   const valorProporcional = (valorDia * diasValidos).toFixed(2);
 
-  // Mostrar o resultado
-  document.getElementById('resultado1').innerHTML = `
+  // Verfica se existe multa de FIDELIDADE
+  const existeMulta = document.getElementById('ExisteMulta');
+  const ExisteMultaChecked = existeMulta.checked;
+
+  if (ExisteMultaChecked) {
+    //console.log('Existe multa de cancelamento!')
+
+    if (isNaN(inicioContrato.getTime()) || isNaN(dataFaturamento.getTime())) {
+      resultadoDiv.innerHTML = `<div class="alert alert-danger">Preencha todas as datas corretamente.</div>`;
+      return;
+    }
+
+    // Define a data final da fidelidade (mesmo dia e mês, +1 ano)
+    const fimFidelidade = new Date(inicioContrato);
+    if (fimFidelidade != null) {
+      if (houveBloqueio.value >= 1) {
+        //console.log('Houve Bloqueio');
+        const fimFidelidadeComBloqueio = new Date(inicioContrato);
+        //.log('Data Inicial ', fimFidelidade.toLocaleDateString('pt-BR'))
+
+
+        fimFidelidadeComBloqueio.setDate(fimFidelidadeComBloqueio.getDate() + 1);
+        fimFidelidadeComBloqueio.setMonth(fimFidelidadeComBloqueio.getMonth() + parseInt(houveBloqueio.value));
+        fimFidelidadeComBloqueio.setFullYear(fimFidelidadeComBloqueio.getFullYear() + 1);
+        //console.log('Fim fidelidade com bloqueio', fimFidelidade.toLocaleDateString('pt-BR'))
+
+
+        fimFidelidade.setDate(fimFidelidadeComBloqueio.getDate());
+        fimFidelidade.setMonth(fimFidelidadeComBloqueio.getMonth());
+        fimFidelidade.setFullYear(fimFidelidadeComBloqueio.getFullYear());
+        //console.log('Fim da fidelidade é ', fimFidelidade.toLocaleDateString('pt-BR'))
+
+
+      }
+      if (houveBloqueio.value <= 0) {
+        fimFidelidade.setFullYear(fimFidelidade.getFullYear() + 1);
+        fimFidelidade.setDate(fimFidelidade.getDate() + 1);
+        //console.log('O final da fidelidade é ', fimFidelidade.toLocaleDateString('pt-BR'))
+      }
+
+      if (dataFaturamento >= fimFidelidade) {
+        console.log('Não existe Multa Passou do periodo')
+        // Mostrar o resultado
+        document.getElementById('resultado1').innerHTML = `
+        <div class="alert alert-success" role="alert">
+          <p><strong>A quantidade de dias utilizado foi: ${diasValidos}</strong></p>
+          <strong>Valor proporcional do cancelamento:</strong> R$ ${valorProporcional}
+        </div>
+    `;
+      } else {
+        // Se ainda está dentro do prazo, calcula meses restantes
+        let anos = fimFidelidade.getFullYear() - dataFaturamento.getFullYear();
+        let meses = fimFidelidade.getMonth() - dataFaturamento.getMonth();
+        let dias = fimFidelidade.getDate() - dataFaturamento.getDate();
+
+        let mesesRestantes = anos * 12 + meses;
+        if (dias > 0) {
+          mesesRestantes += 1; // arredonda pra cima se ainda não chegou no mesmo dia
+        }
+
+        // Garante mínimo de 1 mês, mesmo se as datas forem iguais
+        if (mesesRestantes <= 0) {
+          resultado1.innerHTML = `<div class="alert alert-success">Nenhuma multa aplicável. Contrato já cumprido.</div>`;
+          return;
+        }
+
+        const multaBase = 600;
+        const multaPorMes = multaBase / 12;
+        var valorMulta = multaPorMes * mesesRestantes;
+        if (valorMulta >= multaBase) {
+          valorMulta = multaBase;
+        }
+
+        document.getElementById('resultado1').innerHTML = `
+      <div class="alert alert-warning">
+        <p><strong>A quantidade de dias utilizado foi: ${diasValidos}</strong></p>
+        <strong>Valor proporcional do cancelamento:</strong> R$ ${valorProporcional}
+        <hr>
+        <p><strong>Data final da fidelidade:</strong> ${fimFidelidade.toLocaleDateString('pt-BR')}</p>
+        <p><strong>Meses restantes:</strong> ${mesesRestantes}</p>
+        <p><strong>Houve um bloqueio de: </strong> ${houveBloqueio.value} Meses</p>
+        <hr>
+        <p><strong>Valor da multa:</strong> R$ ${valorMulta.toFixed(2)}</p>
+      </div>
+  `;
+      }
+    }
+
+  } if (!ExisteMultaChecked) {
+    // Mostrar o resultado
+    document.getElementById('resultado1').innerHTML = `
       <div class="alert alert-success" role="alert">
         <p><strong>A quantidade de dias utilizado foi: ${diasValidos}</strong></p>
         <strong>Valor proporcional do cancelamento:</strong> R$ ${valorProporcional}
       </div>
-    `;
+  `;
+  }
 });
+// Aqui será colocado a multa de cancelamento dentro do scopo da aba de cancelamento
+function ExisteMultaSim() {
+  const existeMulta = document.getElementById('ExisteMulta');
+  const CamposMulta = document.getElementById('CamposMulta');
+  const ExisteMultaCheck = existeMulta.checked;
+  if (ExisteMultaCheck) {
+    CamposMulta.style.display = "block";
+    //console.log('Existe uma multa contratual.')
+  } else {
+    CamposMulta.style.display = "none";
+    //console.log('Não existe multa')
+  };
+}
 
 //====================================================================================================================
 // Cálculo do formulário 2 (Bloqueio Temporário)
@@ -251,6 +371,7 @@ async function calcularMudancaVencimento(event) {
   `;
 }
 //======================================================================================================
+/*
 function calcularMultaCancelamento(event) {
   event.preventDefault();
 
@@ -319,3 +440,5 @@ function calcularMultaCancelamento(event) {
     </div>
   `;
 }
+
+*/
