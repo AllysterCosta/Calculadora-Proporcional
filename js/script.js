@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   var diaHojeBloqueio = document.getElementById('dataBloqueio');
   var diaTrocaPlano = document.getElementById('dataTrocaPlanoHoje');
   var diaTrocaVencimento = document.getElementById('dataTrocaVencimentoHoje');
-  var dataMultaCancelamento = document.getElementById('dataMultaCancelamento');
+  var dataMultaCancelamento = document.getElementById('dataMultaCancelamento1');
   //posinputs
   var Hoje = new Date();
   var anoHoje = Hoje.getFullYear();
@@ -371,14 +371,14 @@ async function calcularMudancaVencimento(event) {
   `;
 }
 //======================================================================================================
-/*
+
 function calcularMultaCancelamento(event) {
   event.preventDefault();
 
-  const inicioContrato = new Date(document.getElementById('dataInicioContrato').value);
-  const cancelamento = new Date(document.getElementById('dataMultaCancelamento').value);
-  const resultadoDiv = document.getElementById('resultadoMultaCancelamento');
-  const houveBloqueio = parseInt(document.getElementById('BloqueioMultaCancelamento').value);
+  const inicioContrato = new Date(document.getElementById('dataInicioContrato1').value);
+  const cancelamento = new Date(document.getElementById('dataMultaCancelamento1').value);
+  const resultadoDiv = document.getElementById('resultadoMultaCancelamento1');
+  const houveBloqueio = parseInt(document.getElementById('BloqueioMultaCancelamento1').value);
 
   if (isNaN(inicioContrato.getTime()) || isNaN(cancelamento.getTime())) {
     resultadoDiv.innerHTML = `<div class="alert alert-danger">Preencha todas as datas corretamente.</div>`;
@@ -441,4 +441,3 @@ function calcularMultaCancelamento(event) {
   `;
 }
 
-*/
