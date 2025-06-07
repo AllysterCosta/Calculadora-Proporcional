@@ -389,7 +389,7 @@ function calcularMultaCancelamento(event) {
   const fimFidelidade = new Date(inicioContrato);
   if (houveBloqueio >= 1) {
     const fimFidelidadeComBloqueio = new Date(inicioContrato);
-    fimFidelidadeComBloqueio.setDate(fimFidelidadeComBloqueio.getDate() + 1);
+    fimFidelidadeComBloqueio.setDate(fimFidelidadeComBloqueio.getDate());
     fimFidelidadeComBloqueio.setMonth(fimFidelidadeComBloqueio.getMonth() + houveBloqueio);
     fimFidelidadeComBloqueio.setFullYear(fimFidelidadeComBloqueio.getFullYear() + 1);
     fimFidelidade.setDate(fimFidelidadeComBloqueio.getDate());
@@ -398,7 +398,7 @@ function calcularMultaCancelamento(event) {
   }
   if (houveBloqueio <= 0) {
     fimFidelidade.setFullYear(fimFidelidade.getFullYear() + 1);
-    fimFidelidade.setDate(fimFidelidade.getDate() + 1);
+    fimFidelidade.setDate(fimFidelidade.getDate());
   }
 
   // Se já passou da fidelidade, sem multa
@@ -412,14 +412,28 @@ function calcularMultaCancelamento(event) {
   let meses = fimFidelidade.getMonth() - cancelamento.getMonth();
   let dias = fimFidelidade.getDate() - cancelamento.getDate();
 
+  let DiffDeDiasTime = cancelamento.getTime() - fimFidelidade.getTime()
+  let DiffDeDias = Math.ceil(DiffDeDiasTime / (1000 * 60 * 60 * 24));
+
   let mesesRestantes = anos * 12 + meses;
+  // Verifica se ainda está dentro dos 7 dias de experimentação
   if (dias > 0) {
-    mesesRestantes += 1; // arredonda pra cima se ainda não chegou no mesmo dia
+    console.log("Dias são: ", dias)
+    if (DiffDeDias > 0 && DiffDeDias < 7) {
+      console.log("Diferença de dias é :", DiffDeDias)
+      mesesRestantes -= 12;
+      console.log("Meses restantes: ", mesesRestantes)
+    } else {
+      mesesRestantes += 1; // arredonda pra cima se ainda não chegou no mesmo dia
+    }
   }
+
+
+
 
   // Garante mínimo de 1 mês, mesmo se as datas forem iguais
   if (mesesRestantes <= 0) {
-    resultadoDiv.innerHTML = `<div class="alert alert-success">Nenhuma multa aplicável. Contrato já cumprido.</div>`;
+    resultadoDiv.innerHTML = `<div class="alert alert-success">Nenhuma multa aplicável.</div>`;
     return;
   }
 
