@@ -412,24 +412,19 @@ function calcularMultaCancelamento(event) {
   let meses = fimFidelidade.getMonth() - cancelamento.getMonth();
   let dias = fimFidelidade.getDate() - cancelamento.getDate();
 
-  let DiffDeDiasTime = cancelamento.getTime() - fimFidelidade.getTime()
+  let DiffDeDiasTime = cancelamento.getTime() - inicioContrato.getTime()
   let DiffDeDias = Math.ceil(DiffDeDiasTime / (1000 * 60 * 60 * 24));
 
   let mesesRestantes = anos * 12 + meses;
   // Verifica se ainda está dentro dos 7 dias de experimentação
   if (dias > 0) {
-    console.log("Dias são: ", dias)
+    mesesRestantes += 1; // arredonda pra cima se ainda não chegou no mesmo dia
+  }
+  if (dias < 0) {
     if (DiffDeDias > 0 && DiffDeDias < 7) {
-      console.log("Diferença de dias é :", DiffDeDias)
       mesesRestantes -= 12;
-      console.log("Meses restantes: ", mesesRestantes)
-    } else {
-      mesesRestantes += 1; // arredonda pra cima se ainda não chegou no mesmo dia
     }
   }
-
-
-
 
   // Garante mínimo de 1 mês, mesmo se as datas forem iguais
   if (mesesRestantes <= 0) {
