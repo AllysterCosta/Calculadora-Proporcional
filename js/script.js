@@ -66,10 +66,11 @@ document.getElementById('CancelamentoForm').addEventListener('submit', function 
   // calcular quantos dias tem naquele mês.
   const totalDiasMes = diasNoMes(mesReferencia);
   // Calcular dias usados considerando o intervalo de datas
-  let diasUsados = Math.abs(dataFaturamento.getTime() - mesReferencia.getTime()) + 1;
+  let diasUsados = dataFaturamento.getTime() - mesReferencia.getTime();
   let diasUsadosDiff = Math.ceil(diasUsados / (1000 * 3600 * 24));
   diasUsados = diasUsadosDiff;
   if (diasUsados < 0) diasUsados = 0;
+  if (diasUsados > 0) diasUsados += 1;
 
   // Descontar dias sem internet
   let diasValidos = diasUsados - diasSemInternet;
