@@ -69,8 +69,9 @@ document.getElementById('CancelamentoForm').addEventListener('submit', function 
   let diasUsados = dataFaturamento.getTime() - mesReferencia.getTime();
   let diasUsadosDiff = Math.ceil(diasUsados / (1000 * 3600 * 24));
   diasUsados = diasUsadosDiff;
+  /* console.log(diasUsados); */
   if (diasUsados < 0) diasUsados = 0;
-  if (diasUsados > 0) diasUsados += 1;
+  if (diasUsados >= 0) diasUsados += 1;
 
   // Descontar dias sem internet
   let diasValidos = diasUsados - diasSemInternet;
