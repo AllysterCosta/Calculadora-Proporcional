@@ -452,4 +452,29 @@ function calcularMultaCancelamento(event) {
     </div>
   `;
 }
+/* ================================================================================ */
+
+function ProjecaoUpgrade(event) {
+  event.preventDefault();
+  /* DECLARANDO AS CONSTANTES */
+  const pontosUpgrade = 2.5
+  const pontosAjuste = 1.5
+  const pontosOp = parseFloat(document.getElementById('projecaoPontos').value.replace(',', '.'));
+  const totalUpgrade = 45
+  const resultadoDiv = document.getElementById('resultadoProjecao');
+
+  /* DECLARANDO AS VARIAVEIS */
+  let QntUpgrade = totalUpgrade - pontosOp
+  let UpgradeARealizar = Math.ceil(QntUpgrade / pontosUpgrade);
+  let AjusteARealizar = Math.ceil(QntUpgrade / pontosAjuste);
+
+  /* APRESENTANDO O RESULTADO DA PROJEÇÃO */
+
+  resultadoDiv.innerHTML = `
+  <div class="alert alert-info">
+    <p>Para bater a meta em Upgrades falta: ${UpgradeARealizar} Upgrades</p>
+    <p>Para bater a meta em Ajustes falta: ${AjusteARealizar} Ajustes</p>
+  </div>
+  `
+}
 
