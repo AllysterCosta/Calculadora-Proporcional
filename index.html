@@ -64,7 +64,13 @@
                 </button>
 
             </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab7-tab" data-bs-toggle="tab" data-bs-target="#tab7" type="button"
+                    role="tab">
+                    Cancelamento JEBNET
+                </button>
 
+            </li>
         </ul>
 
         <!-- Conteúdo das Abas -->
@@ -290,6 +296,63 @@
                 <div id="resultadoProjecao" class="mt-4"></div>
             </div>
 
+
+            <!-- JEBNET -->
+            <div class="tab-pane fade" id="tab7" role="tabpanel">
+                <form id="CancelamentoFormJEB" class="row g-3">
+                    <div class="col-md-6">
+                        <label for="valorPlanoJEB" class="form-label">Valor do Plano:</label>
+                        <input type="number" step="0.01" id="valorPlanoJEB" class="form-control" placeholder="Ex: 00,00"
+                            required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="mesReferenciaJEB" class="form-label">Data ultimo vencimento:</label>
+                        <input type="date" id="mesReferenciaJEB" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="dataCancelamentoHojeJEB" class="form-label">Data da solicitação (Hoje):</label>
+                        <input type="date" id="dataCancelamentoHojeJEB" class="form-control" disabled>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="diasSemInternetJEB" class="form-label">Houve dias sem internet:</label>
+                        <input type="number" id="diasSemInternetJEB" class="form-control" value="0" min="0" max="31"
+                            required>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="">
+                            <label for="ExisteMultaJEB" class="form-label">Tem multa contratual?</label>
+                            <input type="checkbox" id="ExisteMultaJEB" onclick="ExisteMultaSim()">
+                        </div>
+                        <div id="CamposMultaJEB" style="display: none;">
+                            <div class="row">
+                                <div class="mb-3 col-md-6">
+                                    <label for="dataInicioContratoJEB" class="form-label">Data de Início do
+                                        Contrato</label>
+                                    <input type="date" class="form-control" id="dataInicioContratoJEB">
+                                </div>
+                                <div class="mb-3 col-md-6">
+                                    <label for="BloqueioMultaCancelamentoJEB" class="form-label">Perído que o contrato
+                                        ficou
+                                        suspenso:</label>
+                                    <select class="form-select" id="BloqueioMultaCancelamentoJEB">
+                                        <option value="0">Selecione</option>
+                                        <option value="1">1 Mês</option>
+                                        <option value="2">2 Meses</option>
+                                        <option value="3">3 Meses</option>
+                                        <option value="4">4 Meses</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 d-flex justify-content-center mt-3">
+                        <button type="submit" class="btn btn-primary">Calcular</button>
+                    </div>
+                </form>
+
+                <div id="resultadoJEB" class="mt-4"></div>
+            </div>
+
         </div>
 
     </main>
@@ -303,6 +366,7 @@
     <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script defer src="js/script.js"></script>
+    <script defer src="js/scriptsJEB.js"></script>
 </body>
 
 </html>
