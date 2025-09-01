@@ -4,10 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Ajustando a data 
     var diaHojeInputJEB = document.getElementById('dataCancelamentoHojeJEB');
-    var diaHojeBloqueioJEB = document.getElementById('dataBloqueioJEB');
-    var diaTrocaPlanoJEB = document.getElementById('dataTrocaPlanoHojeJEB');
-    var diaTrocaVencimentoJEB = document.getElementById('dataTrocaVencimentoHojeJEB');
-    var dataMultaCancelamentoJEB = document.getElementById('dataMultaCancelamentoJEB');
     //posinputs
     var HojeJEB = new Date();
     var anoHojeJEB = HojeJEB.getFullYear();
@@ -16,10 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
     var dataAtualJEB = `${anoHojeJEB}-${mesHojeJEB}-${HojeDiaJEB}`;
 
     diaHojeInputJEB.value = dataAtualJEB;
-    diaHojeBloqueioJEB.value = dataAtualJEB;
-    diaTrocaPlanoJEB.value = dataAtualJEB;
-    diaTrocaVencimentoJEB.value = dataAtualJEB;
-    dataMultaCancelamentoJEB.value = dataAtualJEB;
 });
 
 // Função para calcular quantos dias tem no mês
@@ -68,8 +60,15 @@ document.getElementById('CancelamentoFormJEB').addEventListener('submit', functi
     let diasUsados = dataFaturamentoJEB.getTime() - mesReferenciaJEB.getTime();
     let diasUsadosDiff = Math.ceil(diasUsados / (1000 * 3600 * 24));
     diasUsados = diasUsadosDiff;
-    /* console.log(diasUsados); */
-    if (diasUsados < 0) diasUsados = 0;
+    console.log(diasUsados);
+    if (diasUsados < 0) {
+        document.getElementById('resultadoJEB').innerHTML = `
+        <div class="alert alert-success" role="alert">
+        <p><strong>A ultima fatura já foi paga não tem valor proporcional</strong></p>
+        </div>
+        `;
+        return;
+    };
     if (diasUsados >= 0) diasUsados += 1;
 
     // Descontar dias sem internet
@@ -95,14 +94,14 @@ document.getElementById('CancelamentoFormJEB').addEventListener('submit', functi
         // Define a data final da fidelidade (mesmo dia e mês, +1 ano)
         const fimFidelidade = new Date(inicioContratoJEB);
         if (fimFidelidade != null) {
-            if (houveBloqueio.value >= 1) {
+            if (houveBloqueioJEB.value >= 1) {
                 //console.log('Houve Bloqueio');
                 const fimFidelidadeComBloqueio = new Date(inicioContratoJEB);
                 //.log('Data Inicial ', fimFidelidade.toLocaleDateString('pt-BR'))
 
 
                 fimFidelidadeComBloqueio.setDate(fimFidelidadeComBloqueio.getDate() + 1);
-                fimFidelidadeComBloqueio.setMonth(fimFidelidadeComBloqueio.getMonth() + parseInt(houveBloqueio.value));
+                fimFidelidadeComBloqueio.setMonth(fimFidelidadeComBloqueio.getMonth() + parseInt(houveBloqueioJEB.value));
                 fimFidelidadeComBloqueio.setFullYear(fimFidelidadeComBloqueio.getFullYear() + 1);
                 //console.log('Fim fidelidade com bloqueio', fimFidelidade.toLocaleDateString('pt-BR'))
 
@@ -114,7 +113,7 @@ document.getElementById('CancelamentoFormJEB').addEventListener('submit', functi
 
 
             }
-            if (houveBloqueio.value <= 0) {
+            if (houveBloqueioJEB.value <= 0) {
                 fimFidelidade.setFullYear(fimFidelidade.getFullYear() + 1);
                 fimFidelidade.setDate(fimFidelidade.getDate() + 1);
                 //console.log('O final da fidelidade é ', fimFidelidade.toLocaleDateString('pt-BR'))
@@ -155,7 +154,7 @@ document.getElementById('CancelamentoFormJEB').addEventListener('submit', functi
         <hr>
         <p><strong>Data final da fidelidade:</strong> ${fimFidelidade.toLocaleDateString('pt-BR')}</p>
         <p><strong>Meses restantes:</strong> ${mesesRestantes}</p>
-        <p><strong>Houve um bloqueio de: </strong> ${houveBloqueio.value} Meses</p>
+        <p><strong>Houve um bloqueio de: </strong> ${houveBloqueioJEB.value} Meses</p>
         <hr>
         <p><strong>Valor da multa:</strong> R$ ${multaBase.toFixed(2)}</p>
       </div>
@@ -174,7 +173,7 @@ document.getElementById('CancelamentoFormJEB').addEventListener('submit', functi
     }
 });
 // Aqui será colocado a multa de cancelamento dentro do scopo da aba de cancelamento
-function ExisteMultaSim() {
+function ExisteMultaSimJEB() {
     const existeMultaJEB = document.getElementById('ExisteMultaJEB');
     const CamposMultaJEB = document.getElementById('CamposMultaJEB');
     const ExisteMultaCheckJEB = existeMultaJEB.checked;

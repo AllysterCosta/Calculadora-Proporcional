@@ -70,7 +70,14 @@ document.getElementById('CancelamentoForm').addEventListener('submit', function 
   let diasUsadosDiff = Math.ceil(diasUsados / (1000 * 3600 * 24));
   diasUsados = diasUsadosDiff;
   /* console.log(diasUsados); */
-  if (diasUsados < 0) diasUsados = 0;
+  if (diasUsados < 0) {
+    document.getElementById('resultado1').innerHTML = `
+        <div class="alert alert-success" role="alert">
+        <p><strong>A ultima fatura já foi paga não tem valor proporcional</strong></p>
+        </div>
+        `;
+    return;
+  };
   if (diasUsados >= 0) diasUsados += 1;
 
   // Descontar dias sem internet
@@ -216,12 +223,13 @@ document.getElementById('bloqueioTemporario').addEventListener('submit', functio
   let diasUsados = dataFaturamento.getTime() - mesReferencia.getTime();
   let diasUsadosDiff = Math.ceil(diasUsados / (1000 * 3600 * 24));
   diasUsados = diasUsadosDiff;
-  if (diasUsados < 0) diasUsados = 0;
+  //if (diasUsados < 0) diasUsados = 0;
+  console.log('dias usados foi ', diasUsados)
   if (diasUsados > 0) diasUsados += 1;
 
   // Descontar dias sem internet
   let diasValidos = diasUsados - diasSemInternet;
-  if (diasValidos < 0) diasValidos = 0;
+  //if (diasValidos < 0) diasValidos = 0;
 
   // Calcular valor proporcional
   const valorDia = valorPlano / totalDiasMes;
