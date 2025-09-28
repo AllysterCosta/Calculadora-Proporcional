@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   var diaTrocaPlano = document.getElementById('dataTrocaPlanoHoje');
   var diaTrocaVencimento = document.getElementById('dataTrocaVencimentoHoje');
   var dataMultaCancelamento = document.getElementById('dataMultaCancelamento1');
+  var DataCancelamento = document.getElementById('DataCancelarServico');
   //posinputs
   var Hoje = new Date();
   var anoHoje = Hoje.getFullYear();
@@ -21,6 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
   diaTrocaPlano.value = dataAtual;
   diaTrocaVencimento.value = dataAtual;
   dataMultaCancelamento.value = dataAtual;
+  DataCancelamento.value = dataAtual;
+
 });
 
 // Função para calcular quantos dias tem no mês
@@ -487,5 +490,31 @@ function ProjecaoUpgrade(event) {
 }
 
 /* =============================================================================== */
-/* JEBNET */
+/* SERVIÇOS */
+function CancelarServico(event) {
+  event.preventDefault();
 
+  const DataCancelamentoServico = new Date(document.getElementById('DataCancelarServico').value);
+  const DataVencimentoServico = new Date(document.getElementById('VencimentoServico').value);
+  const ValorServico = parseFloat(document.getElementById('valorServico').value);
+  const resultados = document.getElementById('resultadoServico');
+
+  if (isNaN(DataCancelamentoServico.getTime()) || isNaN(DataVencimentoServico.getTime())) {
+    resultadoServico.innerHTML = `<div class="alert alert-danger">Preencha todas as datas corretamente.</div>`;
+    return;
+  }
+  let diasMesServico = diasNoMes(DataCancelamentoServico);
+  let DiasUsadosServico = DataCancelamentoServico.getTime() - DataVencimentoServico.getTime();
+  let DiasTotalServico = Math.ceil(DiasUsadosServico / (1000 * 60 * 60 * 24));
+
+  let ValorCobrado = (ValorServico / diasMesServico) * DiasTotalServico;
+
+  resultados.innerHTML = `
+    <div class="alert alert-info">
+        <p><strong>Foram utilizados: </strong> ${DiasTotalServico} dias</p>
+        <p><strong>Valor proporcional do serviço:</strong> R$ ${ValorCobrado.toFixed(2)}</p>
+      </div>
+  `
+
+
+}
