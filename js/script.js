@@ -506,9 +506,18 @@ function CancelarServico(event) {
   let diasMesServico = diasNoMes(DataCancelamentoServico);
   let DiasUsadosServico = DataCancelamentoServico.getTime() - DataVencimentoServico.getTime();
   let DiasTotalServico = Math.ceil(DiasUsadosServico / (1000 * 60 * 60 * 24));
+  if (DiasTotalServico >= 0) DiasTotalServico += 1;
 
   let ValorCobrado = (ValorServico / diasMesServico) * DiasTotalServico;
 
+  if (ValorCobrado < 0) {
+    resultados.innerHTML = `
+    <div class="alert alert-info">
+        <p><strong>A ultima fatura já foi paga não resta proporcional </strong></p>
+      </div>
+  `;
+    return;
+  }
   resultados.innerHTML = `
     <div class="alert alert-info">
         <p><strong>Foram utilizados: </strong> ${DiasTotalServico} dias</p>
